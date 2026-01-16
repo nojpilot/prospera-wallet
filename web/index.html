@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prospera Wallet</title>
+    <link rel="stylesheet" href="/static/app.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <div class="noise"></div>
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+
+    <main class="layout">
+      <header class="top">
+        <div class="brand">
+          <div class="logo">P</div>
+          <div class="brand-text">
+            <span class="brand-name">Prospera</span>
+            <span class="brand-sub" id="workspace-name">Workspace</span>
+          </div>
+        </div>
+        <div class="user-pill" id="user-pill">Guest</div>
+      </header>
+
+      <section class="hero">
+        <h1>Shared money, clear answers.</h1>
+        <p>
+          Capture expenses fast, keep balances fair, and see the month at a glance.
+        </p>
+        <div class="hero-meta">
+          <div class="meta-card">
+            <span class="meta-label">Base currency</span>
+            <span class="meta-value" id="base-currency">USD</span>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">Status</span>
+            <span class="meta-value" id="status-text">Waiting for Telegram</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="quick-add">
+        <div class="section-title">
+          <h2>Quick add</h2>
+          <p>One line entry, the rest is automatic.</p>
+        </div>
+        <form id="entry-form" class="entry-form">
+          <label>
+            <span>Amount</span>
+            <input type="text" name="amount" placeholder="250" required />
+          </label>
+          <label>
+            <span>Currency</span>
+            <input type="text" name="currency" placeholder="USD" />
+          </label>
+          <label>
+            <span>Category</span>
+            <input type="text" name="category" placeholder="cafe" required />
+          </label>
+          <label class="full">
+            <span>Note</span>
+            <input type="text" name="note" placeholder="optional" />
+          </label>
+          <div class="actions">
+            <button type="submit" data-action="expense" class="btn primary">
+              Add expense
+            </button>
+            <button type="submit" data-action="income" class="btn ghost">
+              Add income
+            </button>
+          </div>
+        </form>
+        <div class="helper" id="form-message"></div>
+      </section>
+
+      <section class="grid">
+        <div class="card" id="report-card">
+          <div class="card-header">
+            <h3>Monthly spend</h3>
+            <span class="chip">Auto</span>
+          </div>
+          <pre id="report-text">Loading report...</pre>
+        </div>
+        <div class="card" id="balance-card">
+          <div class="card-header">
+            <h3>Balance</h3>
+            <span class="chip">Live</span>
+          </div>
+          <pre id="balance-text">Loading balance...</pre>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>Prospera Wallet</span>
+        <span class="footer-note">Powered by Telegram Web Apps</span>
+      </footer>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
