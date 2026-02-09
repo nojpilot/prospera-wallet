@@ -90,3 +90,36 @@ Designed for extension to:
 - on-chain settlement adapters (EVM/TON)
 - recurring expenses
 - budget policies and anomaly/fraud checks
+
+## Deploy Mini App on external HTTPS :8080 (VPS)
+If 80/443 are busy, you can expose Mini App via `https://your-domain:8080` (any FQDN works; `mini.` is optional).
+
+Added files:
+- `deploy/docker-compose.8080.yml` – adds `webapp` + TLS nginx gateway on external `8080`
+- `deploy/nginx-miniapp-8080.conf` – nginx TLS reverse proxy config
+- `scripts/setup_vps_8080.sh` – one-shot VPS setup script
+
+### Prerequisites
+- DNS `A` record for your domain to VPS IP
+- Valid TLS certificate for the same domain (e.g. Let's Encrypt)
+
+
+### Where to put your domain
+- `mini.` prefix is **not required**. You can use root domain (`example.com`) or any subdomain (`app.example.com`, `wallet.example.com`).
+- **Option A (recommended for first run):** pass it inline in command as `DOMAIN=app.example.com`.
+- **Option B (persistent):** save `DOMAIN=app.example.com` in `.env`, then you can run script without passing `DOMAIN` each time.
+
+### One-command setup
+```bash
+DOMAIN=app.example.com \
+BOT_TOKEN=123456:telegram-token \
+JWT_SECRET='change-me' \
+CERT_FULLCHAIN=/etc/letsencrypt/live/app.example.com/fullchain.pem \
+CERT_PRIVKEY=/etc/letsencrypt/live/app.example.com/privkey.pem \
+sudo bash scripts/setup_vps_8080.sh
+```
+
+After setup, bot Mini App URL is set to:
+- `WEBAPP_URL=https://app.example.com:8080`
+
+> Security note: external `8080` is safe only when TLS is enabled (HTTPS).
