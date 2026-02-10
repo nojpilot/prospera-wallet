@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from aiogram.types import User as TgUser
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import User
@@ -32,8 +33,14 @@ async def ensure_user(session: AsyncSession, tg_user: TgUser) -> User:
         username=tg_user.username,
     )
     session.add(user)
-    await session.commit()
-    return user
+    try:
+        await session.commit()
+        return user
+    except IntegrityError:
+        await session.rollback()
+        result = await session.execute(select(User).where(User.tg_id == tg_user.id))
+        existing = result.scalar_one()
+        return existing
 
 
 async def ensure_user_from_payload(session: AsyncSession, payload: dict) -> User:
@@ -71,5 +78,23 @@ async def ensure_user_from_payload(session: AsyncSession, payload: dict) -> User
         username=username,
     )
     session.add(user)
-    await session.commit()
-    return user
+    try:
+        await session.commit()
+        return user
+    except IntegrityError:
+        await session.rollback()
+        result = await session.execute(select(User).where(User.tg_id == tg_id))
+        user = result.scalar_one()
+        updated = False
+        if user.first_name != first_name:
+            user.first_name = first_name
+            updated = True
+        if user.last_name != last_name:
+            user.last_name = last_name
+            updated = True
+        if user.username != username:
+            user.username = username
+            updated = True
+        if updated:
+            await session.commit()
+        return user
