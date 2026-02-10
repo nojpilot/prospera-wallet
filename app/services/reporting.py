@@ -5,7 +5,7 @@ import datetime as dt
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Category, Transaction, Workspace
+from app.db.models import Category, Transaction, TransactionType, Workspace
 from app.services.utils import format_minor
 
 
@@ -39,7 +39,7 @@ async def monthly_expense_report(
         .outerjoin(Category, Transaction.category_id == Category.id)
         .where(
             Transaction.workspace_id == workspace.id,
-            Transaction.type == "expense",
+            Transaction.type == TransactionType.expense,
             Transaction.occurred_at >= start,
             Transaction.occurred_at < end,
         )

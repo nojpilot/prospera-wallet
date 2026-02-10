@@ -20,14 +20,13 @@ Production-oriented shared finance backend with Telegram bot + Mini App authenti
 ## Domain entities
 Implemented entities:
 - User
+- Workspace
+- Membership
 - Wallet
-- Group
-- GroupMember
-- Expense
-- ExpenseSplit
-- Settlement
+- Category
 - Transaction
-- AuditLog
+- TransactionSplit
+- FxRate
 
 ## Security model
 ### Option A (implemented): Custodial
@@ -48,22 +47,27 @@ Current controls:
 ## API endpoints
 - `POST /api/v1/users/register`
 - `POST /api/v1/auth/telegram-miniapp`
-- `GET /api/v1/wallet/me`
-- `POST /api/v1/wallet/transfer`
-- `POST /api/v1/groups`
-- `GET /api/v1/groups/{id}`
-- `POST /api/v1/groups/{id}/expenses`
-- `GET /api/v1/groups/{id}/balances`
-- `POST /api/v1/groups/{id}/settlements`
+Mini App HTTP endpoints (served by `app/web_server.py`):
+- `GET /api/status`
+- `POST /api/expense`
+- `POST /api/income`
+- `GET /api/balance`
+- `GET /api/report`
 
 ## Bot commands
 - `/start`
-- `/balance`
-- `/groups`
-- `/newgroup`
-- `/addexpense` (stateful flow)
-- `/groupbalance`
-- `/settle`
+- `/open` – open Mini App
+- `/setup <name> [CUR]` – create workspace
+- `/join <workspace_id>` – join workspace
+- `/workspace [id]` – list/switch workspace
+- `/wallets` – list wallets
+- `/wallet_add <name> <CUR> [shared|personal]`
+- `/categories [expense|income]`
+- `/category_add <name> [expense|income]`
+- `/add <amount> [CUR] <category> [note]`
+- `/income <amount> [CUR] <category> [note]`
+- `/balance` – who owes whom
+- `/report` – monthly expense report
 
 ## Run with Docker Compose
 ```bash
@@ -80,9 +84,7 @@ uvicorn app.main:app --reload
 
 ## Testing strategy implemented
 - Unit test: deterministic settlement simplification
-- Integration-like test: group balances + settlement computation
-- Permission test: member validation enforcement
-- Concurrency simulation test: deterministic multiple settlement runs
+- Integration-like test: workspace balances + expense computation
 
 ## Future-ready design notes
 Designed for extension to:
@@ -95,8 +97,8 @@ Designed for extension to:
 If 80/443 are busy, you can expose Mini App via `https://your-domain:8080` (any FQDN works; `mini.` is optional).
 
 Added files:
-- `deploy/docker-compose.8080.yml` – adds `webapp` + TLS nginx gateway on external `8080`
-- `deploy/nginx-miniapp-8080.conf` – nginx TLS reverse proxy config
+- `deploy/nginx-miniapp-8080.conf` – nginx TLS reverse proxy config for the Mini App on `:8080`
+- `deploy/nginx-bot-8443.conf` – nginx TLS reverse proxy config for the bot webhook on `:8443`
 - `scripts/setup_vps_8080.sh` – one-shot VPS setup script
 
 ### Prerequisites
@@ -119,7 +121,8 @@ CERT_PRIVKEY=/etc/letsencrypt/live/app.example.com/privkey.pem \
 sudo bash scripts/setup_vps_8080.sh
 ```
 
-After setup, bot Mini App URL is set to:
+After setup, these env vars are set:
 - `WEBAPP_URL=https://app.example.com:8080`
+- `BOT_WEBHOOK_URL=https://app.example.com:8443`
 
 > Security note: external `8080` is safe only when TLS is enabled (HTTPS).

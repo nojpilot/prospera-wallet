@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     bot_token: str
     bot_webhook_secret: str = 'webhook-secret'
     bot_webhook_path: str = '/telegram/webhook'
+    bot_webhook_url: str | None = None
 
     rate_limit_per_minute: int = 120
     allow_negative_balances: bool = False

@@ -78,6 +78,7 @@ upsert_env "JWT_SECRET" "$JWT_SECRET_VALUE"
 upsert_env "WEBAPP_URL" "https://${DOMAIN}:8080"
 upsert_env "WEBAPP_HOST" "0.0.0.0"
 upsert_env "WEBAPP_PORT" "8080"
+upsert_env "BOT_WEBHOOK_URL" "https://${DOMAIN}:8443"
 
 if ! grep -q "^BOT_WEBHOOK_SECRET=" .env; then
   upsert_env "BOT_WEBHOOK_SECRET" "change-me"
@@ -86,7 +87,7 @@ if ! grep -q "^BOT_WEBHOOK_PATH=" .env; then
   upsert_env "BOT_WEBHOOK_PATH" "/telegram/webhook"
 fi
 
-docker compose -f docker-compose.yml -f deploy/docker-compose.8080.yml up -d --build
+docker compose -f docker-compose.yml up -d --build
 
 echo "Done. Mini App URL: https://${DOMAIN}:8080"
 echo "IMPORTANT: this requires a valid public TLS certificate for ${DOMAIN}."

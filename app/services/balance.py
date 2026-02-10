@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.models import Membership, Transaction, Workspace
+from app.db.models import Membership, Transaction, TransactionType, Workspace
 from app.services.utils import display_name, format_minor
 
 
@@ -39,7 +39,7 @@ async def calculate_balances(
         .options(selectinload(Transaction.splits))
         .where(
             Transaction.workspace_id == workspace.id,
-            Transaction.type == "expense",
+            Transaction.type == TransactionType.expense,
         )
     )
     transactions = result.scalars().all()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import User, Wallet, Workspace
+from app.db.models import User, Wallet, WalletType, Workspace
 
 
 async def list_wallets(session: AsyncSession, workspace: Workspace) -> list[Wallet]:
@@ -36,7 +36,7 @@ async def get_shared_wallet(
 ) -> Wallet | None:
     stmt = select(Wallet).where(
         Wallet.workspace_id == workspace.id,
-        Wallet.type == "shared",
+        Wallet.type == WalletType.shared,
         Wallet.is_active.is_(True),
     )
     if currency:
@@ -53,7 +53,7 @@ async def get_personal_wallet(
 ) -> Wallet | None:
     stmt = select(Wallet).where(
         Wallet.workspace_id == workspace.id,
-        Wallet.type == "personal",
+        Wallet.type == WalletType.personal,
         Wallet.owner_user_id == user.id,
         Wallet.is_active.is_(True),
     )
@@ -95,7 +95,7 @@ async def ensure_default_wallets(
         shared = Wallet(
             workspace_id=workspace.id,
             name="Shared",
-            type="shared",
+            type=WalletType.shared,
             currency=workspace.base_currency,
         )
         session.add(shared)
@@ -109,7 +109,7 @@ async def ensure_default_wallets(
         personal = Wallet(
             workspace_id=workspace.id,
             name=f"Personal {label}",
-            type="personal",
+            type=WalletType.personal,
             owner_user_id=owner.id,
             currency=workspace.base_currency,
         )

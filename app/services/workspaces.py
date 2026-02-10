@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Membership, User, Workspace
+from app.db.models import Membership, MembershipRole, User, Workspace
 
 
 async def create_workspace(
@@ -19,7 +19,7 @@ async def create_workspace(
     membership = Membership(
         workspace_id=workspace.id,
         user_id=owner.id,
-        role="owner",
+        role=MembershipRole.owner,
         share_weight=1,
     )
     session.add(membership)
@@ -54,7 +54,11 @@ async def add_member(
     if membership:
         return membership
 
-    membership = Membership(workspace_id=workspace.id, user_id=user.id, role="member")
+    membership = Membership(
+        workspace_id=workspace.id,
+        user_id=user.id,
+        role=MembershipRole.member,
+    )
     session.add(membership)
     user.active_workspace_id = workspace.id
     await session.commit()

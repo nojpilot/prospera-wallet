@@ -9,6 +9,7 @@ from sqlalchemy.orm import selectinload
 from app.db.models import (
     Membership,
     Transaction,
+    TransactionType,
     TransactionSplit,
     User,
     Wallet,
@@ -68,7 +69,7 @@ async def create_expense(
     tx = Transaction(
         workspace_id=workspace.id,
         wallet_id=wallet.id,
-        type="expense",
+        type=TransactionType.expense,
         amount_minor=amount_minor,
         currency=currency,
         note=note,
@@ -110,7 +111,7 @@ async def create_income(
     tx = Transaction(
         workspace_id=workspace.id,
         wallet_id=wallet.id,
-        type="income",
+        type=TransactionType.income,
         amount_minor=amount_minor,
         currency=currency,
         note=note,

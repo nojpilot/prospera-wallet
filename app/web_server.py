@@ -210,8 +210,7 @@ async def handle_balance(request: web.Request) -> web.Response:
             return json_error("no_active_workspace", status=409)
         balances = await calculate_balances(session, workspace)
         members = await get_workspace_members(session, workspace)
-        report = format_balance_report(balances, members)
-
+    report = format_balance_report(balances, members)
     return json_ok({"report": report})
 
 
